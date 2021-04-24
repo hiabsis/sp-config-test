@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: zuul-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    name: defaultDataSource
+    password: 123456
+    url: jdbc:mysql://172.17.0.3:3306/tp_music?serverTimezone=UTC
+    username: root
+  cloud:
+    config:
+      override-none: true
+mybatis-plus:
+  mapper-locations=classpath: mappers/*xml
+
+server:
+  port: 3601
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka1:2001/eureka, http://eureka2:2002/eureka
+
+zuul:
+  retryable: true
+  routes:
+    user-service: /**
+    singer-service: /**
+    music-feign-service: /music-feign-service/**
+#    user-service: /*
+
+
+#  开启重试，并配置 ribbon 重试参数
+
+ribbon:
+  ConnectTimeout: 1000
+  ReadTimeout: 1000
+  MaxAutoRetriesNextServer: 1
+  MaxAutoRetries: 1
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 500
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
